@@ -4,4 +4,6 @@ plotly
 sqlalchemy
 psycopg2-binary
 google-api-python-client
+streamlit-autorefresh
+
                                 # Push your code to GitHub  

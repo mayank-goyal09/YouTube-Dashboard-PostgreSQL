@@ -294,8 +294,20 @@ else:
 top_n = st.sidebar.slider("Top N Videos to Show", min_value=5, max_value=30, value=10, step=1, key="top_n_slider")
 
 if st.sidebar.button("🔄 Manual Data Refresh"):
-    st.cache_data.clear()
-    st.rerun()
+    api_key = os.getenv("YOUTUBE_API_KEY") or st.secrets.get("YOUTUBE_API_KEY")
+    if api_key:
+        with st.spinner("Fetching latest data from YouTube..."):
+            from youtube_fetch import fetch_youtube_data
+            if fetch_youtube_data():
+                st.toast("Data updated successfully!", icon="✅")
+            else:
+                st.error("Fetch failed. Check code logs.")
+        st.cache_data.clear()
+        st.rerun()
+    else:
+        st.error("No API Key found! Cannot fetch updates.")
+        st.cache_data.clear()
+        st.rerun()
 st.sidebar.markdown("---")
 st.sidebar.caption("Auto-refresh every 60s")
 

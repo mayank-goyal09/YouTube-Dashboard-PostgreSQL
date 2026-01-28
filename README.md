@@ -21,3 +21,34 @@
 This **YouTube Analytics Dashboard 2.0** is a comprehensive tool designed to empower content creators with real-time insights, AI-driven recommendations, and deep performance analysis. Unlike standard analytics, this dashboard focuses on **actionable intelligence**—telling you not just *what* happened, but *why* and *what to do next*.
 
 ---
+
+## 🏗️ **ARCHITECTURAL DECISION: The PostgreSQL vs. SQLite Story** 🏗️
+
+### **The Journey: From Cloud to Local**
+
+**"Why I chose SQLite over PostgreSQL for this Open-Source Release"**
+
+Initially, I built this application using **PostgreSQL hosted on Neon DB**. This setup was robust, scalable, and production-ready, connecting a live cloud database to my application. I successfully implemented the full pipeline:
+- ✅ **Connected via `psycopg2`**
+- ✅ **Managed credentials securely**
+- ✅ **Handled cloud latency and connection pooling**
+
+**However, when preparing to open-source this project for the community and recruiters, I faced a critical decision:**
+
+1.  **Security Risks**: Distributing a project dependent on a private cloud database requires handling sensitive connection strings and passwords. Even with environment variables, it adds a layer of "setup friction" for anyone trying to run the code.
+2.  **Complexity for Users**: I wanted this tool to be **instantly usable**. Requiring users to set up a Neon account, configure a Postgres instance, and manage network rules creates a barrier to entry.
+3.  **Portability**: A self-contained application is far superior for a portfolio showcase.
+
+### **The Solution: Strategically Migrating to SQLite**
+
+I refactored the backend to use **SQLite**, an embedded database engine.
+
+**Why SQLite was the smarter choice here:**
+*   **Zero Configuration**: The database is a single file (`youtube_data.db`). No servers, no ports, no user management.
+*   **Instant Deployment**: Users can clone the repo and run it immediately.
+*   **Data Privacy**: All analytics data stays on the user's local machine—crucial for personal channel data.
+*   **Simplicity**: It proves that **I can choose the right tool for the job**, prioritizing user experience and portability over unnecessary complexity.
+
+> *I have the skills to build enterprise-grade PostgreSQL systems, but I have the wisdom to use SQLite when it serves the user best.*
+
+---

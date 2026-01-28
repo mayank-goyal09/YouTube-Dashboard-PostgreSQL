@@ -53,7 +53,7 @@ I refactored the backend to use **SQLite**, an embedded database engine.
 
 ---
 
-## 🔥 **KEY FEATURES** 🔥
+# 🔥 **KEY FEATURES** 🔥
 
 ### 1. 📊 **Real-Time Analytics**
 *   **Live Dashboard**: Auto-refreshes every 60 seconds to fetch the latest view counts, likes, and comments.
@@ -82,3 +82,67 @@ I refactored the backend to use **SQLite**, an embedded database engine.
 | 🐼 **Data Processing** | Pandas, SQLAlchemy |
 
 ---
+
+## 📂 **PROJECT STRUCTURE** 📂
+
+```
+youtube-analytics-dashboard/
+│
+├── 🐍 youtube_dashboard.py    # Main Application (UI & Logic)
+├── 🔌 youtube_fetch.py        # API Data Fetcher & ETL Script
+├── 🧪 init_demo_data.py       # Demo Data Generator (for testing)
+├── 💾 youtube_data.db         # SQLite Database (Local)
+├── 📋 requirements.txt        # Project Dependencies
+├── 🔒 .env.example            # API Key Configuration Template
+└── 📖 README.md               # Documentation
+```
+
+---
+
+## 🚀 **QUICK START** 🚀
+
+### **Step 1: Clone the Repository**
+```bash
+git clone https://github.com/mayank-goyal09/youtube-analytics-dashboard.git
+cd youtube-analytics-dashboard
+```
+
+### **Step 2: Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+### **Step 3: Run with Demo Data (Instant Test)**
+Want to see it in action without an API key?
+```bash
+python init_demo_data.py
+streamlit run youtube_dashboard.py
+```
+
+### **Step 4: Use Your Own Data (Optional)**
+1.  Get a **YouTube Data API Key** from Google Cloud Console.
+2.  Create a `.env` file and add your key:
+    ```env
+    YOUTUBE_API_KEY=your_api_key_here
+    YOUTUBE_CHANNEL_ID=your_channel_id_here
+    ```
+3.  Run the fetcher:
+    ```bash
+    python youtube_fetch.py
+    ```
+
+---
+
+## 👨‍💻 **CONNECT WITH ME** 👨‍💻
+
+[![GitHub](https://img.shields.io/badge/GitHub-mayank--goyal09-181717?style=for-the-badge&logo=github)](https://github.com/mayank-goyal09)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Mayank_Goyal-0077B5?style=for-the-badge&logo=linkedin)](https://www.linkedin.com/in/mayank-goyal-mg09/)
+[![Portfolio](https://img.shields.io/badge/Portfolio-mayank--goyal09-00C853?style=for-the-badge&logo=googlechrome&logoColor=white)](https://mayank-goyal09.github.io/)
+[![YouTube](https://img.shields.io/badge/YouTube-@maygal_memer-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](http://www.youtube.com/@maygal_memer)
+
+**Mayank Goyal**
+*Data Analyst | Python Developer | Open Source Enthusiast*
+
+---
+
+![Footer](https://capsule-render.vercel.app/api?type=waving&color=gradient&height=100&section=footer)

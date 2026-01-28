@@ -1,13 +1,61 @@
 from googleapiclient.discovery import build
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from datetime import datetime
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # ----------------- CONFIG -----------------
-API_KEY = "AIzaSyDoTbivz3ZGF3-H3nV7mKfMmKNsIZTZq4g"
-CHANNEL_ID = "UCv-yOn6QFBonsVyotOYmQCw"  # Example: Google Developers channel
-# PostgreSQL connection
-engine = create_engine("postgresql+psycopg2://postgres:itsmaygal02@localhost:5432/youtube_dashboard")
+API_KEY = os.getenv("YOUTUBE_API_KEY", "")
+CHANNEL_ID = os.getenv("YOUTUBE_CHANNEL_ID", "UCv-yOn6QFBonsVyotOYmQCw")
+
+# SQLite connection (local file, no password needed!)
+DB_PATH = os.path.join(os.path.dirname(__file__), "youtube_data.db")
+engine = create_engine(f"sqlite:///{DB_PATH}")
+
+# ----------------- INITIALIZE TABLES -----------------
+def init_database():
+    """Create tables if they don't exist"""
+    with engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS channel_stats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                channel_name TEXT,
+                subscribers INTEGER,
+                total_views INTEGER,
+                total_videos INTEGER,
+                dislikes INTEGER DEFAULT 0,
+                fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS video_stats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                video_id TEXT,
+                title TEXT,
+                published_at TIMESTAMP,
+                views INTEGER,
+                likes INTEGER,
+                dislikes INTEGER DEFAULT 0,
+                comments INTEGER,
+                fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conn.commit()
+    print("✅ Database tables initialized")
+
+# Initialize database on import
+init_database()
+
+# Check if API key is configured
+if not API_KEY:
+    print("⚠️  No YOUTUBE_API_KEY found in environment variables!")
+    print("   Create a .env file with: YOUTUBE_API_KEY=your_api_key_here")
+    print("   Or run: python init_demo_data.py to use demo data instead")
+    exit(1)
 
 # Build YouTube API client
 youtube = build("youtube", "v3", developerKey=API_KEY)
@@ -26,13 +74,13 @@ channel_stats = {
     "subscribers": int(channel_data["statistics"]["subscriberCount"]),
     "total_views": int(channel_data["statistics"]["viewCount"]),
     "total_videos": int(channel_data["statistics"]["videoCount"]),
-    "dislikes": int(channel_data["statistics"].get("dislikeCount", 0))  # 👈 added
+    "dislikes": int(channel_data["statistics"].get("dislikeCount", 0))
 }
 
-# Save channel stats to PostgreSQL
+# Save channel stats to SQLite
 df_channel = pd.DataFrame([channel_stats])
 df_channel.to_sql("channel_stats", engine, if_exists="append", index=False)
-print("✅ Channel stats inserted into PostgreSQL")
+print("✅ Channel stats inserted into SQLite")
 
 # ----------------- STEP 2: Latest 10 Videos -----------------
 video_request = youtube.search().list(
@@ -46,6 +94,10 @@ video_response = video_request.execute()
 videos = []
 
 for item in video_response["items"]:
+    # Skip non-video items (like playlists)
+    if item["id"].get("kind") != "youtube#video" and "videoId" not in item["id"]:
+        continue
+    
     video_id = item["id"]["videoId"]
     title = item["snippet"]["title"]
     published_at = item["snippet"]["publishedAt"]
@@ -56,6 +108,10 @@ for item in video_response["items"]:
         id=video_id
     )
     stats_response = stats_request.execute()
+    
+    if not stats_response["items"]:
+        continue
+        
     stats = stats_response["items"][0]["statistics"]
 
     videos.append({
@@ -64,11 +120,16 @@ for item in video_response["items"]:
         "published_at": datetime.fromisoformat(published_at.replace("Z", "+00:00")),
         "views": int(stats.get("viewCount", 0)),
         "likes": int(stats.get("likeCount", 0)),
-        "dislikes": int(stats.get("dislikeCount", 0)),   # 👈 added
+        "dislikes": int(stats.get("dislikeCount", 0)),
         "comments": int(stats.get("commentCount", 0))
     })
 
-# Save video stats to PostgreSQL
-df_videos = pd.DataFrame(videos)
-df_videos.to_sql("video_stats", engine, if_exists="append", index=False)
-print("✅ Video stats inserted into PostgreSQL")
+# Save video stats to SQLite
+if videos:
+    df_videos = pd.DataFrame(videos)
+    df_videos.to_sql("video_stats", engine, if_exists="append", index=False)
+    print(f"✅ {len(videos)} video stats inserted into SQLite")
+else:
+    print("⚠️  No videos found to insert")
+
+print(f"\n📁 Data saved to: {DB_PATH}")

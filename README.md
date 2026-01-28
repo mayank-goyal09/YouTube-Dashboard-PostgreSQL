@@ -52,3 +52,33 @@ I refactored the backend to use **SQLite**, an embedded database engine.
 > *I have the skills to build enterprise-grade PostgreSQL systems, but I have the wisdom to use SQLite when it serves the user best.*
 
 ---
+
+## 🔥 **KEY FEATURES** 🔥
+
+### 1. 📊 **Real-Time Analytics**
+*   **Live Dashboard**: Auto-refreshes every 60 seconds to fetch the latest view counts, likes, and comments.
+*   **KPI Cards**: Instant view of Subscribers, Total Views, Avg Engagement, and more.
+
+### 2. 🧠 **AI & Smart Insights (New!)**
+*   **Video Performance Scores**: Every video gets a grade (A+, B, C...) based on a weighted algorithm of views, likes, and comments.
+*   **Growth Velocity**: Tracks if your channel momentum is "Growing", "Good", or "Excellent".
+*   **Actionable Recommendations**: AI-logic suggests specific actions (e.g., "Boost Engagement", "Improve Thumbnails") based on your metrics.
+
+### 3. 🎨 **Premium UI/UX**
+*   **Dual Theme Support**: Seamlessly switch between **Dark Mode** (Cyberpunk/Midnight) and **Light Mode** (Clean/Minimal) with dynamic text contrast adjustments.
+*   **Interactive Charts**: Beautiful Plotly visualizations for subscriber growth, engagement rates, and content performance.
+
+---
+
+## 🛠️ **TECH STACK** 🛠️
+
+| **Category** | **Technologies** |
+|--------------|------------------|
+| 🐍 **Language** | Python 3.9+ |
+| 🖥️ **Frontend** | Streamlit |
+| 💾 **Database** | SQLite (Migrated from PostgreSQL) |
+| 🔌 **API** | YouTube Data API v3 |
+| 📊 **Visualization** | Plotly Express |
+| 🐼 **Data Processing** | Pandas, SQLAlchemy |
+
+---

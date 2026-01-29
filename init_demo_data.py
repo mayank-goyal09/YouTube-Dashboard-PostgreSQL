@@ -98,14 +98,13 @@ def generate_demo_data():
     for i, title in enumerate(video_titles):
         published = datetime.now() - timedelta(days=random.randint(1, 90))
         views = random.randint(500, 50000)
-        videos.append({
-            "video_id": f"demo_vid_{i:03d}",
-            "title": title,
-            "published_at": published,
-            "views": views,
-            "likes": int(views * random.uniform(0.02, 0.08)),
-            "dislikes": int(views * random.uniform(0.001, 0.005)),
-            "comments": int(views * random.uniform(0.005, 0.02)),
-            "fetched_at": datetime.now()
-        })
-    
+        
+    print(f"\n📁 Demo data saved to: {DB_PATH}")
+    print("\n🎉 You can now run the dashboard:")
+    print("   streamlit run youtube_dashboard.py")
+
+if __name__ == "__main__":
+    print("🎬 YouTube Analytics Dashboard - Demo Data Generator")
+    print("=" * 50)
+    init_database()
+    generate_demo_data()

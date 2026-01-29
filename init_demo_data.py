@@ -4,6 +4,23 @@ Run this script to populate the database with sample data for testing.
 This allows users to see the dashboard working without a YouTube API key.
 """
 
+import pandas as pd
+from sqlalchemy import create_engine, text
+from datetime import datetime, timedelta
+import os
+import random
+
+# SQLite connection
+DB_PATH = os.path.join(os.path.dirname(__file__), "youtube_data.db")
+engine = create_engine(f"sqlite:///{DB_PATH}")
+
+def init_database():
+    """Create tables if they don't exist"""
+    with engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS channel_stats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                channel_name TEXT,
                 subscribers INTEGER,
                 total_views INTEGER,
                 total_videos INTEGER,
@@ -81,14 +98,10 @@ def generate_demo_data():
     for i, title in enumerate(video_titles):
         published = datetime.now() - timedelta(days=random.randint(1, 90))
         views = random.randint(500, 50000)
-        
-    print(f"\n📁 Demo data saved to: {DB_PATH}")
-    print("\n🎉 You can now run the dashboard:")
-    print("   streamlit run youtube_dashboard.py")
-
-if __name__ == "__main__":
-    print("🎬 YouTube Analytics Dashboard - Demo Data Generator")
-    print("=" * 50)
+        videos.append({
+            "video_id": f"demo_vid_{i:03d}",
+            "title": title,
+            "published_at": published,
+            "views
     init_database()
     generate_demo_data()
-

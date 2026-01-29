@@ -8,7 +8,41 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 from datetime import datetime, timedelta
 import os
-import ran
+import random
+
+# SQLite connection
+DB_PATH = os.path.join(os.path.dirname(__file__), "youtube_data.db")
+engine = create_engine(f"sqlite:///{DB_PATH}")
+
+def init_database():
+    """Create tables if they don't exist"""
+    with engine.connect() as conn:
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS channel_stats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                channel_name TEXT,
+                subscribers INTEGER,
+                total_views INTEGER,
+                total_videos INTEGER,
+                dislikes INTEGER DEFAULT 0,
+                fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS video_stats (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                video_id TEXT,
+                title TEXT,
+                published_at TIMESTAMP,
+                views INTEGER,
+                likes INTEGER,
+                dislikes INTEGER DEFAULT 0,
+                comments INTEGER,
+                fetched_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """))
+        conn.commit()
+
 def generate_demo_data():
     """Generate realistic demo data"""
     
@@ -75,16 +109,3 @@ def generate_demo_data():
             "fetched_at": datetime.now()
         })
     
-    df_videos = pd.DataFrame(videos)
-    df_videos.to_sql("video_stats", engine, if_exists="append", index=False)
-    print(f"✅ Inserted {len(videos)} video records")
-    
-    print(f"\n📁 Demo data saved to: {DB_PATH}")
-    print("\n🎉 You can now run the dashboard:")
-    print("   streamlit run youtube_dashboard.py")
-
-if __name__ == "__main__":
-    print("🎬 YouTube Analytics Dashboard - Demo Data Generator")
-    print("=" * 50)
-    init_database()
-    generate_demo_data()
